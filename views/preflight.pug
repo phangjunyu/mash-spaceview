@@ -24,9 +24,13 @@ html
         .container-fluid.wrapper
             .row.map-view
                 .col-3
-                    .choose-btn-group
-                        .button.btn.btn-outline-primary#choose-start(type='button') Choose startpoint
-                        .button.btn.btn-outline-primary#choose-end(type='button') Choose endpoint
+                    .btn-group(data-toggle='buttons').list-group
+                        label.btn.btn-primary#choose-start
+                            input(type='radio', name='options', autocomplete='off')
+                            | Choose Startpoint
+                        label.btn.btn-primary#choose-end
+                            input(type='radio', name='options', autocomplete='off')
+                            |  Choose Endpoint
                     .coordinate-info.list-group
                         a.list-group-item.list-group-item-action.flex-column
                             .d-flex.w-100.justify-content-between
@@ -49,60 +53,68 @@ html
         var startButton = $("#choose-start")
         var endButton = $("#choose-end")
         startButton.click(function() {
-            $(this).toggleClass("active");
+            $(this).checked=true
+            endButton.checked=false;
         });
         endButton.click(function() {
-            $(this).toggleClass("active");
+            $(this).checked=true
+            startButton.checked=false;
         });
-        function addLatLng(event) {
-            var path = poly.getPath();
-
-          // Because path is an MVCArray, we can simply append a new coordinate
-          // and it will automatically appear.
-            path.push(event.latLng);
-
-          // Add a new marker at the new plotted point on the polyline.
-            var marker = new google.maps.Marker({
-                position: event.latLng,
-                title: '#' + path.getLength(),
-                map: map
-            });
-        }
-        //- function addLatLng(event, startMarker, endMarker, map){
-        //-     var path = poly.getPath();
-        //-     if ($('#choose-start').hasClass("active")){
-        //-         changeMarkerPosition(startMarker, event.latLng, map)
-        //-         // Add a new marker at the new plotted point on the polyline.
-        //-     }
-        //-     else if ($('#choose-end').hasClass("active")){
-        //-         changeMarkerPosition(endMarker, event.latLng, map)
-        //-     }
-        //-     else {
-        //- 
-        //-     }
-        function changeMarkerPosition(marker, newloc, map) {
+        function changeMarkerPosition(marker, newloc, map){
             marker.setPosition(newloc);
-            marker.setMap(map)
+            marker.set(map);
         }
         function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 17,
-            center: {lat: 37.876, lng: -122.258}  // Center the map on Jacobs Hall
-            });
-            poly = new google.maps.Polyline({
-                strokeColor: '#000000', strokeOpacity: 1.0,
-                strokeWeight: 3
-            });
-            poly.setMap(map);
+            flightPathCoordinates = []
+            var options = {
+                zoom: 15,
+                center: {lat: 37.876, lng: -122.258},
+                mapTypeId: google.maps.MapTypeId.HYBRID
+            }
+            map = new google.maps.Map(document.getElementById('map'), options);
             var startMarker = new google.maps.Marker({
                 position: {lat: 37.876, lng: -122.258}
             });
             var endMarker = new google.maps.Marker({
                 position: {lat: 37.876, lng: -122.258}
             });
+            var flightPath = new google.maps.Polyline({
+                  path: flightPathCoordinates,
+                  geodesic: true,
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 1.0,
+                  strokeWeight: 2
+                });
+            flightPath.setMap(null)
             // Add a listener for the click event
-            map.addListener('click', addLatLng)
-            }
+            map.addListener('click', function(event){
+                if ($('#choose-start').hasClass('active')){
+                    startMarker.setPosition(event.latLng)
+                    startMarker.setMap(map)
+                    flightPathCoordinates[0] = event.latLng
+                }
+                else if ($('#choose-end').hasClass('active')){
+                    endMarker.setPosition(event.latLng)
+                    endMarker.setMap(map)
+                    flightPathCoordinates[1] = event.latLng
+                }
+                else {
+            
+                }
+                if(flightPathCoordinates.length > 1){
+                    flightPath.setMap(null);
+                    flightPath = new google.maps.Polyline({
+                          path: flightPathCoordinates,
+                          geodesic: true,
+                          strokeColor: '#FFC0CB',
+                          strokeOpacity: 1.0,
+                          strokeWeight: 5
+                        });
+                    flightPath.setMap(map);
+                }
+            })
+            
+        }
     script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAOXmvxQAzQGoCLodBuhjRJ_LanBmL-Asc&callback=initMap', async='', defer='')
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js', integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN', crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js', integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q', crossorigin='anonymous')
