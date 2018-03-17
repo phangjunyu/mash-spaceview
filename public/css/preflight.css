@@ -1,0 +1,16 @@
+.wrapper {
+	height: 100%;
+}
+.map-view{
+	display:flex;
+	height: 100%;
+}
+#choose-start{
+	width:50%;
+}
+#choose-end{
+	width:50%;
+}
+.list-group-item{
+	height:120px;
+}
