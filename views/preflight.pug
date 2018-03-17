@@ -54,6 +54,32 @@ html
         endButton.click(function() {
             $(this).toggleClass("active");
         });
+        function addLatLng(event) {
+            var path = poly.getPath();
+
+          // Because path is an MVCArray, we can simply append a new coordinate
+          // and it will automatically appear.
+            path.push(event.latLng);
+
+          // Add a new marker at the new plotted point on the polyline.
+            var marker = new google.maps.Marker({
+                position: event.latLng,
+                title: '#' + path.getLength(),
+                map: map
+            });
+        }
+        //- function addLatLng(event, startMarker, endMarker, map){
+        //-     var path = poly.getPath();
+        //-     if ($('#choose-start').hasClass("active")){
+        //-         changeMarkerPosition(startMarker, event.latLng, map)
+        //-         // Add a new marker at the new plotted point on the polyline.
+        //-     }
+        //-     else if ($('#choose-end').hasClass("active")){
+        //-         changeMarkerPosition(endMarker, event.latLng, map)
+        //-     }
+        //-     else {
+        //- 
+        //-     }
         function changeMarkerPosition(marker, newloc, map) {
             marker.setPosition(newloc);
             marker.setMap(map)
@@ -75,20 +101,8 @@ html
                 position: {lat: 37.876, lng: -122.258}
             });
             // Add a listener for the click event
-            map.addListener('click', addLatLng(event, startMarker, endMarker, map){
-                var path = poly.getPath();
-                if ($('#choose-start').hasClass("active")){
-                    changeMarkerPosition(startMarker, event.latLng, map)
-                    // Add a new marker at the new plotted point on the polyline.
-                }
-                else if ($('#choose-end').hasClass("active")){
-                    changeMarkerPosition(endMarker, event.latLng, map)
-                }
-                else {
-                    
-                }
-            });
-        }
+            map.addListener('click', addLatLng)
+            }
     script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAOXmvxQAzQGoCLodBuhjRJ_LanBmL-Asc&callback=initMap', async='', defer='')
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js', integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN', crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js', integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q', crossorigin='anonymous')
