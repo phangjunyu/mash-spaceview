@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 doctype html
 html
     head
@@ -186,3 +187,115 @@ html
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js', integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN', crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js', integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q', crossorigin='anonymous')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js', integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl', crossorigin='anonymous')
+=======
+doctype html
+html
+    head
+        title Simple Map
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+        link(rel='stylesheet', type='text/css', href='/css/preflight.css')
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css', integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm', crossorigin='anonymous')
+        script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+        style.
+          /* Always set the map height explicitly to define the size of the div
+          * element that contains the map. */
+          #map {
+          height: 100%;
+          }
+          /* Optional: Makes the sample page fill the window. */
+          html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          }
+    body
+        .container-fluid.wrapper
+            .row.map-view
+                .col-3
+                    .choose-btn-group
+                        .button.btn.btn-outline-primary#choose-start(type='button') Choose startpoint
+                        .button.btn.btn-outline-primary#choose-end(type='button') Choose endpoint
+                    .coordinate-info.list-group
+                        a.list-group-item.list-group-item-action.flex-column
+                            .d-flex.w-100.justify-content-between
+                                h5.mb-1.name-of-place
+                                small Startpoint
+                            p.mb-1.details-of-place
+                                |
+                            small.coordinates-of-place
+                        a.list-group-item.list-group-item-action.flex-column
+                            .d-flex.w-100.justify-content-between
+                                h5.mb-1.name-of-place
+                                small Endpoint
+                            p.mb-1.details-of-place
+                                |
+                            small.coordinates-of-place
+                .col-9
+                    #map
+
+    script.
+        var startButton = $("#choose-start")
+        var endButton = $("#choose-end")
+        startButton.click(function() {
+            $(this).toggleClass("active");
+        });
+        endButton.click(function() {
+            $(this).toggleClass("active");
+        });
+        function addLatLng(event) {
+            var path = poly.getPath();
+
+          // Because path is an MVCArray, we can simply append a new coordinate
+          // and it will automatically appear.
+            path.push(event.latLng);
+
+          // Add a new marker at the new plotted point on the polyline.
+            var marker = new google.maps.Marker({
+                position: event.latLng,
+                title: '#' + path.getLength(),
+                map: map
+            });
+        }
+        //- function addLatLng(event, startMarker, endMarker, map){
+        //-     var path = poly.getPath();
+        //-     if ($('#choose-start').hasClass("active")){
+        //-         changeMarkerPosition(startMarker, event.latLng, map)
+        //-         // Add a new marker at the new plotted point on the polyline.
+        //-     }
+        //-     else if ($('#choose-end').hasClass("active")){
+        //-         changeMarkerPosition(endMarker, event.latLng, map)
+        //-     }
+        //-     else {
+        //-
+        //-     }
+        function changeMarkerPosition(marker, newloc, map) {
+            marker.setPosition(newloc);
+            marker.setMap(map)
+        }
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 17,
+            center: {lat: 37.876, lng: -122.258}  // Center the map on Jacobs Hall
+            });
+            poly = new google.maps.Polyline({
+                strokeColor: '#000000', strokeOpacity: 1.0,
+                strokeWeight: 3
+            });
+            poly.setMap(map);
+            var startMarker = new google.maps.Marker({
+                position: {lat: 37.876, lng: -122.258}
+            });
+            var endMarker = new google.maps.Marker({
+                position: {lat: 37.876, lng: -122.258}
+            });
+            // Add a listener for the click event
+            map.addListener('click', addLatLng)
+            }
+
+    script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAOXmvxQAzQGoCLodBuhjRJ_LanBmL-Asc&callback=initMap', async='', defer='')
+    script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js', integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN', crossorigin='anonymous')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js', integrity='sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q', crossorigin='anonymous')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js', integrity='sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl', crossorigin='anonymous')
+>>>>>>> 3d7fbbc7e904f8539fc87f9aef1e93fcc86fca72
