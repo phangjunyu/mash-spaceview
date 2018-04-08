@@ -32,24 +32,29 @@ html
                             input(type='radio', name='options', autocomplete='off')
                             |  Choose Endpoint
                     .coordinate-info.list-group
-                        a.list-group-item.list-group-item-action.flex-column
+                        a.list-group-item.list-group-item-action.flex-column.start-point
                             .d-flex.w-100.justify-content-between
                                 h5.mb-1.name-of-place
                                 small Startpoint
                             p.mb-1.details-of-place
                                 | 
                             small.coordinates-of-place
-                        a.list-group-item.list-group-item-action.flex-column
+                                |
+                        a.list-group-item.list-group-item-action.flex-column.end-point
                             .d-flex.w-100.justify-content-between
                                 h5.mb-1.name-of-place
                                 small Endpoint
                             p.mb-1.details-of-place
                                 | 
                             small.coordinates-of-place
+                                |
+                    .launchbutton
+                        #launch.button.btn.btn-outline-primary(type='button') Launch Flight Mode
                 .col-9
                     #map 
 
     script.
+        var launchButton = $("#launch")
         var startButton = $("#choose-start")
         var endButton = $("#choose-end")
         startButton.click(function() {
@@ -71,7 +76,7 @@ html
                 center: {lat: 37.876, lng: -122.258},
                 mapTypeId: google.maps.MapTypeId.HYBRID
             }
-            map = new google.maps.Map(document.getElementById('map'), options);
+            var map = new google.maps.Map(document.getElementById('map'), options);
             var startMarker = new google.maps.Marker({
                 position: {lat: 37.876, lng: -122.258}
             });
@@ -113,7 +118,69 @@ html
                     flightPath.setMap(map);
                 }
             })
-            
+        }
+        launchButton.click(function() {
+            addPolygon(map);
+        });
+        function addPolygon(map) {
+            // Define the LatLng coordinates for the polygon's path.
+            var options = {
+                zoom: 16,
+                center: {lat: 37.876, lng: -122.258},
+                mapTypeId: google.maps.MapTypeId.HYBRID
+            }
+            var map = new google.maps.Map(document.getElementById('map'), options);
+            var firstPolygonCoords = [
+                {lat: 37.878288, lng: -122.248975},
+                {lat: 37.876831, lng: -122.246714},
+                {lat: 37.877882, lng: -122.246458},
+                {lat: 37.878829, lng: -122.247561},
+                {lat: 37.878288, lng: -122.248975},
+            ];
+            var secondPolygonCoords = [
+                {lat: 37.872313, lng: -122.263357},
+                {lat: 37.873539, lng: -122.261658},
+                {lat: 37.873003, lng: -122.260530},
+                {lat: 37.871813, lng: -122.262571},
+                {lat: 37.872313, lng: -122.263357},
+            ];
+            var thirdPolygonCoords = [
+                {lat: 37.879111, lng: -122.256217},
+                {lat: 37.879431, lng: -122.254923},
+                {lat: 37.875488, lng: -122.254188},
+                {lat: 37.875848, lng: -122.255849},
+                {lat: 37.879111, lng: -122.256217},
+            ];
+            // Construct the first polygon.
+            var polyOne = new google.maps.Polygon({
+                paths: firstPolygonCoords,
+                strokeColor: '#0033cc',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0033cc',
+                fillOpacity: 0.35
+            });
+            polyOne.setMap(map);
+            // Construct the second polygon.
+            var polyTwo = new google.maps.Polygon({
+                paths: secondPolygonCoords,
+                strokeColor: '#0066cc',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0066cc',
+                fillOpacity: 0.35
+            });
+            polyTwo.setMap(map);
+            // Construct the third polygon.
+            var polyThree = new google.maps.Polygon({
+                paths: thirdPolygonCoords,
+                strokeColor: '#0099cc',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#0099cc',
+                fillOpacity: 0.35
+            });
+            polyThree.setMap(map);
         }
     script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAOXmvxQAzQGoCLodBuhjRJ_LanBmL-Asc&callback=initMap', async='', defer='')
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js', integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN', crossorigin='anonymous')
