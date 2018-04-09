@@ -34,22 +34,33 @@ html
                     .coordinate-info.list-group
                         a.list-group-item.list-group-item-action.flex-column.start-point
                             .d-flex.w-100.justify-content-between
-                                h5.mb-1.name-of-place
+                                h5.mb-1.details-of-start-point
                                 small Startpoint
-                            p.mb-1.details-of-place
-                                | 
-                            small.coordinates-of-place
-                                |
+                            p.mb-1.coordinates-of-start-point
                         a.list-group-item.list-group-item-action.flex-column.end-point
                             .d-flex.w-100.justify-content-between
-                                h5.mb-1.name-of-place
+                                h5.mb-1.details-of-end-point
                                 small Endpoint
-                            p.mb-1.details-of-place
-                                | 
-                            small.coordinates-of-place
-                                |
+                            p.mb-1.coordinates-of-end-point
                     .launchbutton
                         #launch.button.btn.btn-outline-primary(type='button') Launch Flight Mode
+                    .data-window.list-group
+                        a.list-group-item.list-group-item-action.flex-column.current-location
+                            .d-flex.w-100.justify-content-between
+                                h5.mb-1 Latitude
+                            p.mb-1.current-latitude
+                        a.list-group-item.list-group-item-action.flex-column.current-location
+                            .d-flex.w-100.justify-content-between
+                                h5.mb-1 Longitude
+                            p.mb-1.current-longitude
+                        a.list-group-item.list-group-item-action.flex-column
+                            .d-flex.w-100.justify-content-between
+                                h5.mb-1 Altitude
+                            p.mb-1.current-altitude 
+                        a.list-group-item.list-group-item-action.flex-column
+                            .d-flex.w-100.justify-content-between
+                                h5.mb-1 Speed
+                            p.mb-1.current-speed
                 .col-9
                     #map 
 
@@ -69,6 +80,7 @@ html
             marker.setPosition(newloc);
             marker.set(map);
         }
+        
         function initMap() {
             flightPathCoordinates = []
             var options = {
@@ -77,6 +89,7 @@ html
                 mapTypeId: google.maps.MapTypeId.HYBRID
             }
             var map = new google.maps.Map(document.getElementById('map'), options);
+            
             var startMarker = new google.maps.Marker({
                 position: {lat: 37.876, lng: -122.258}
             });
@@ -92,16 +105,33 @@ html
                 });
             flightPath.setMap(null)
             // Add a listener for the click event
+            var geocoder = new google.maps.Geocoder();
             map.addListener('click', function(event){
                 if ($('#choose-start').hasClass('active')){
-                    startMarker.setPosition(event.latLng)
+                    latLng = event.latLng
+                    startMarker.setPosition(latLng)
                     startMarker.setMap(map)
-                    flightPathCoordinates[0] = event.latLng
+                    flightPathCoordinates[0] = latLng
+                    $('.coordinates-of-start-point').text(latLng)
+                    reverseGeoCode(geocoder, latLng, function(err, returned){
+                        if (err) console.log("ERROR:", err)
+                        else {
+                            $('.details-of-start-point').text(returned)
+                        }
+                    });
                 }
                 else if ($('#choose-end').hasClass('active')){
-                    endMarker.setPosition(event.latLng)
+                    latLng = event.latLng
+                    endMarker.setPosition(latLng)
                     endMarker.setMap(map)
-                    flightPathCoordinates[1] = event.latLng
+                    flightPathCoordinates[1] = latLng
+                    $('.coordinates-of-end-point').text(latLng)
+                    reverseGeoCode(geocoder, latLng, function(err, returned){
+                        if (err) console.log("ERROR:", err)
+                        else {
+                            $('.details-of-end-point').text(returned)
+                        }
+                    });
                 }
                 else {
             
@@ -118,10 +148,13 @@ html
                     flightPath.setMap(map);
                 }
             });
-            
+
             var currentLocationMarker = new google.maps.Marker({
                 position: {lat: 37.876, lng: -122.258},
-                //- icon: "https://imgur.com/a/zqHUR"
+                icon: {
+            		url: "https://image.ibb.co/bxWeCH/icon.png",
+            		scaledSize: new google.maps.Size(64, 64)
+            	}
             });
             var geo_options = {
               enableHighAccuracy: true, 
@@ -132,16 +165,33 @@ html
             var currentLocation = new showCurrentLocation(currentLocationDiv, map, currentLocationMarker, geo_options);
             var trackLocationDiv = document.createElement('div');
             var currentLocation = new trackCurrentLocation(trackLocationDiv, map, currentLocationMarker, geo_options);
-            
+
             currentLocationDiv.index = 1;
             trackLocationDiv.index = 1;
             map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(trackLocationDiv);
             map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(currentLocationDiv);
+            
+            launchButton.click(function() {
+                addPolygon(map);
+            });
         }
         
-        launchButton.click(function() {
-            addPolygon(map);
-        });
+        function reverseGeoCode(geocoder, latlng, callback) {
+            geocoder.geocode({
+                'latLng': latlng
+            }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                        var address = results[0].formatted_address
+                        callback(null, address)
+                    } else {
+                        callback("No results found", null);
+                    }
+                } else {
+                    callback("Geocoder failed due to: " + status, null);
+                }
+            });
+        }
         
         function showCurrentLocation(controlDiv, map, currentLocationMarker, geo_options) {
             // Set CSS for the control interior.
@@ -169,7 +219,6 @@ html
             controlUI.addEventListener('click', function() {
                 // Try HTML5 geolocation.
                 var time = new Date();
-                console.log("show clicked at", time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds())
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(function(position) {
                         var pos = {
@@ -177,10 +226,15 @@ html
                             lng: position.coords.longitude
                         };
                         var time = new Date();
-                        console.log("position obtained at", time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds())
                         currentLocationMarker.setPosition(pos);
                         currentLocationMarker.setMap(map);
                         map.panTo(pos);
+                        $(".current-latitude").text(position.coords.latitude)
+                        $(".current-longitude").text(position.coords.longitude)
+                        var altitude = position.coords.altitude != null ? position.coords.altitude : "Not Available"
+                        $(".current-altitude").text(altitude)
+                        var speed = position.coords.speed != null ? position.coords.speed : "Not Available"
+                        $(".current-speed").text(speed)
                     }, function() {
                         handleLocationError(true);
                     }, geo_options);
@@ -226,6 +280,12 @@ html
                             lng: position.coords.longitude
                         };
                         currentLocationMarker.setPosition(pos)
+                        $(".current-latitude").text(position.coords.latitude)
+                        $(".current-longitude").text(position.coords.longitude)
+                        var altitude = position.coords.altitude != null ? position.coords.altitude : "Not Available"
+                        $(".current-altitude").text(altitude)
+                        var speed = position.coords.speed != null ? position.coords.speed : "Not Available"
+                        $(".current-speed").text(speed)
                     }, function() {
                         handleLocationError(true);
                     }, geo_options);
@@ -238,12 +298,7 @@ html
         }
         function addPolygon(map) {
             // Define the LatLng coordinates for the polygon's path.
-            var options = {
-                zoom: 16,
-                center: {lat: 37.876, lng: -122.258},
-                mapTypeId: google.maps.MapTypeId.HYBRID
-            }
-            var map = new google.maps.Map(document.getElementById('map'), options);
+            
             var firstPolygonCoords = [
                 {lat: 37.878288, lng: -122.248975},
                 {lat: 37.876831, lng: -122.246714},

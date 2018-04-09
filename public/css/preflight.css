@@ -10,22 +10,5 @@
 #choose-end{
 }
 .list-group-item{
-	height:120px;
-}
-=======
-.wrapper {
-	height: 100%;
-}
-.map-view{
-	display:flex;
-	height: 100%;
-}
-#choose-start{
-	width:100%;
-}
-#choose-end{
-	width:100%;
-}
-.list-group-item{
-	height:120px;
+	height:50%;
 }
