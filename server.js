@@ -10,6 +10,7 @@ var express = require('express'),
 // mongoose.Promise = global.Promise;
 // mongoose.connect('mongodb://localhost/Boxesdb');
 
+// use npm start
 //set pug as template engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
