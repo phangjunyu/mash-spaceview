@@ -52,7 +52,7 @@ function initMap() {
 			startMarker.setPosition(latLng)
 			startMarker.setMap(map)
 			flightPathCoordinates[0] = latLng
-			$('.coordinates-of-start-point').text(latLng)
+			$('#coordinates-of-start-point').text(latLng)
 			reverseGeoCode(geocoder, latLng, function(err, returned){
 				if (err) console.log("ERROR:", err)
 				else {
@@ -65,7 +65,7 @@ function initMap() {
 			endMarker.setPosition(latLng)
 			endMarker.setMap(map)
 			flightPathCoordinates[1] = latLng
-			$('.coordinates-of-end-point').text(latLng)
+			$('#coordinates-of-end-point').text(latLng)
 			reverseGeoCode(geocoder, latLng, function(err, returned){
 				if (err) console.log("ERROR:", err)
 				else {
@@ -133,10 +133,12 @@ function initMap() {
 	map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(currentLocationDiv);
 
 	launchButton.click(function() {
-		url = 'localhost:5000/returnCoordinates';
-		$.getJSON(url, function(response){
+		var startpoint = $('#coordinates-of-start-point').text()
+		var endpoint = $('#coordinates-of-end-point').text()
+		url = 'https://9ff41eda.ngrok.io/returnCoordinates';
+		$.getJSON(url, data={startpoint,endpoint},function(response){
 			var coordinates = response['final_boxes']
-			addPolygon(map, coordinates, '#000080', 0.1);
+			addPolygon(map, coordinates, '#00FFFF', 0.1);
 		});
 	});
 	testButton.click(function() {
@@ -277,6 +279,7 @@ function addPolygon(map, coordinates, color, fillOpacity) {
 			fillColor: color,
 			fillOpacity: fillOpacity
 		});
+		poly.setMap(map);
 	}
-	poly.setMap(map);
+
 }

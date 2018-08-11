@@ -16,9 +16,4 @@ mainRouter.route('/preflight')
 		res.render('preflight')
 	})
 
-mainRouter.route('/launch')
-	.get(function(req, res, next){
-		request.get('https://6929e12d.ngrok.io/returnCoordinates', function(error, response, body){})
-	})
-
 module.exports = mainRouter;
